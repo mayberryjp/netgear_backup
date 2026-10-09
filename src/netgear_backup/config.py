@@ -1,5 +1,12 @@
-from pydantic import Field
+from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Device(BaseModel):
+    base_url: str
+    username: str | None = None
+    password: str | None = None
+    gambit: str | None = None
 
 
 class Settings(BaseSettings):
@@ -7,7 +14,10 @@ class Settings(BaseSettings):
 
     base_url: str = "http://netgearswitch.office.mayberry.farm"
     username: str = "admin"
-    password: str = Field(...)
+    password: str = ""
+
+    # JSON list of devices; unset fields inherit the values above. Empty = single device from base_url.
+    devices: list[Device] = []
     verify_tls: bool = False
     request_timeout_seconds: int = 30
 
@@ -29,4 +39,16 @@ class Settings(BaseSettings):
 
 
 def load_settings() -> Settings:
-    return Settings()  # type: ignore[call-arg]
+    return Settings()
+
+
+def device_settings(settings: Settings) -> list[Settings]:
+    """Expand settings into one effective Settings per device."""
+    if not settings.devices:
+        return [settings]
+    return [
+        settings.model_copy(
+            update={"devices": [], **d.model_dump(exclude_none=True)},
+        )
+        for d in settings.devices
+    ]

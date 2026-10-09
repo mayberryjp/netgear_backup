@@ -4,7 +4,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from netgear_backup.client import download_config
-from netgear_backup.config import Settings, load_settings
+from netgear_backup.config import Settings, device_settings, load_settings
 from netgear_backup.logging import configure_logging, get_logger
 
 log = get_logger("worker.backup")
@@ -50,8 +50,10 @@ def main() -> None:
     settings = load_settings()
     configure_logging(settings.log_level)
     log.info("starting; interval=%ss dir=%s", settings.interval_seconds, settings.backup_dir)
+    targets = device_settings(settings)
     while True:
-        backup_with_retries(settings)
+        for target in targets:
+            backup_with_retries(target)
         time.sleep(settings.interval_seconds)
 
 

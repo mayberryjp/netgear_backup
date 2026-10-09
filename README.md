@@ -9,6 +9,13 @@ The switch authenticates with a `Gambit` session token. By default the worker lo
 `NETGEAR_LOGIN_PATH`, `NETGEAR_LOGIN_USERNAME_FIELD`, `NETGEAR_LOGIN_PASSWORD_FIELD`. Alternatively set
 `NETGEAR_GAMBIT` to a token copied from the browser (it expires with the web session).
 
+## Multiple devices
+
+Set `NETGEAR_DEVICES` to a JSON list. Each entry needs `base_url` and may override `username`,
+`password` and `gambit`; anything omitted inherits `NETGEAR_USERNAME` / `NETGEAR_PASSWORD`. Each device is
+backed up in turn, and one failing does not stop the others. Files are named by host, and retention applies
+per host.
+
 ## Run
 
     docker build -t netgear-backup:dev .

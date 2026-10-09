@@ -4,9 +4,11 @@ services:
     restart: unless-stopped
     environment:
       TZ: America/New_York
-      NETGEAR_BASE_URL: http://netgearswitch.office.mayberry.farm
       NETGEAR_USERNAME: admin
       NETGEAR_PASSWORD: change-me
+      NETGEAR_DEVICES: >-
+        [{"base_url": "http://netgearswitch.office.mayberry.farm"},
+         {"base_url": "http://netgearswitch2.office.mayberry.farm", "password": "other"}]
       NETGEAR_VERIFY_TLS: "false"
       NETGEAR_BACKUP_DIR: /backups
       NETGEAR_INTERVAL_SECONDS: "86400"
