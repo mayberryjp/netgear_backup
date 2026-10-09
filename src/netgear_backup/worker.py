@@ -41,7 +41,9 @@ def backup_with_retries(settings: Settings) -> None:
             log.info("backup saved to %s", target)
             return
         except Exception:
-            log.exception("backup attempt %d/%d failed", attempt, settings.max_attempts)
+            log.exception(
+                "backup attempt %d/%d failed for %s", attempt, settings.max_attempts, settings.base_url
+            )
             if attempt < settings.max_attempts:
                 time.sleep(settings.retry_delay_seconds)
 

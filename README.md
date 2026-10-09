@@ -1,14 +1,17 @@
 # netgear-backup
 
-Long-running worker that fetches the Netgear switch `startup-config` (`/iss/file/get/startup-config`)
-and saves it to a volume every `NETGEAR_INTERVAL_SECONDS` (default 24h), keeping the newest
-`NETGEAR_RETENTION_COUNT` files.
+Long-running worker that downloads the config backup from Netgear web-managed switches and saves it
+to a volume every `NETGEAR_INTERVAL_SECONDS` (default 24h), keeping the newest
+`NETGEAR_RETENTION_COUNT` files per host.
 
-The switch authenticates with a `Gambit` session token. By default the worker logs in with
-`NETGEAR_USERNAME` / `NETGEAR_PASSWORD` to obtain one. If your firmware's login form differs, set
-`NETGEAR_LOGIN_PATH`, `NETGEAR_LOGIN_PASSWORD_FIELD`. The defaults match the GS316EPP (password only,
-sent as `md5(interleave(password, rand))` to `/redirect.html`). Alternatively set
-`NETGEAR_GAMBIT` to a token copied from the browser (it expires with the web session).
+Two firmware flavours are detected automatically; both log in with the password only (no username),
+sent as `md5(interleave(password, rand))`:
+
+- GS316EPP / MS108EUP: `POST /redirect.html`, then `/iss/file/get/startup-config?Gambit=<token>`.
+  `NETGEAR_GAMBIT` may supply a browser token to skip login.
+- GS308EPP: `POST /login.cgi` (sets a `SID` cookie), then `/confFile.cgi?cmd=backup_conf`.
+
+The backup is a binary file for the switch's own restore; it is not human readable.
 
 ## Multiple devices
 
