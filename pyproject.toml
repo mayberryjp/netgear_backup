@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "netgear-backup"
+version = "0.1.0"
+description = "Periodic Netgear switch startup-config backup worker"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "requests>=2.31",
+  "pydantic>=2.7",
+  "pydantic-settings>=2.3",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8",
+  "ruff>=0.6",
+  "mypy>=1.11",
+  "bandit>=1.7",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+
+[tool.mypy]
+python_version = "3.12"
+strict = true

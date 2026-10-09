@@ -1,0 +1,18 @@
+services:
+  netgear_backup:
+    image: netgear-backup:dev
+    restart: unless-stopped
+    environment:
+      TZ: America/New_York
+      NETGEAR_BASE_URL: http://netgearswitch.office.mayberry.farm
+      NETGEAR_USERNAME: admin
+      NETGEAR_PASSWORD: change-me
+      NETGEAR_VERIFY_TLS: "false"
+      NETGEAR_BACKUP_DIR: /backups
+      NETGEAR_INTERVAL_SECONDS: "86400"
+      NETGEAR_RETENTION_COUNT: "30"
+    volumes:
+      - netgear_backups:/backups
+
+volumes:
+  netgear_backups:
