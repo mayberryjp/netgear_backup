@@ -1,3 +1,4 @@
+import hashlib
 import re
 
 import requests
@@ -5,7 +6,19 @@ import urllib3
 
 from netgear_backup.config import Settings
 
-_GAMBIT_RE = re.compile(r"Gambit=([A-Za-z0-9]+)")
+_GAMBIT_RE = re.compile(r"""name=['"]Gambit['"]\s+value=['"]([A-Za-z0-9]+)['"]""")
+_RAND_RE = re.compile(r"""id=['"]rand['"]\s+value=['"](\d+)['"]""")
+
+
+def _merge(a: str, b: str) -> str:
+    """Interleave two strings character by character, as the switch login JS does."""
+    out: list[str] = []
+    for i in range(max(len(a), len(b))):
+        if i < len(a):
+            out.append(a[i])
+        if i < len(b):
+            out.append(b[i])
+    return "".join(out)
 
 
 class NetgearError(Exception):
@@ -14,13 +27,19 @@ class NetgearError(Exception):
 
 def _login(session: requests.Session, settings: Settings, base: str) -> str:
     """Log in to the switch web UI and return the Gambit session token."""
+    timeout = settings.request_timeout_seconds
+    page = session.get(f"{base}/", timeout=timeout)
+    page.raise_for_status()
+    rand = _RAND_RE.search(page.text)
+    if not rand:
+        raise NetgearError("login failed: rand not found on login page")
+
+    # The switch expects md5(interleave(password, rand)); not used for security.
+    digest = hashlib.md5(_merge(settings.password, rand.group(1)).encode()).hexdigest()  # nosec B324
     resp = session.post(
         f"{base}{settings.login_path}",
-        data={
-            settings.login_username_field: settings.username,
-            settings.login_password_field: settings.password,
-        },
-        timeout=settings.request_timeout_seconds,
+        data={settings.login_password_field: digest},
+        timeout=timeout,
     )
     resp.raise_for_status()
 

@@ -6,7 +6,8 @@ and saves it to a volume every `NETGEAR_INTERVAL_SECONDS` (default 24h), keeping
 
 The switch authenticates with a `Gambit` session token. By default the worker logs in with
 `NETGEAR_USERNAME` / `NETGEAR_PASSWORD` to obtain one. If your firmware's login form differs, set
-`NETGEAR_LOGIN_PATH`, `NETGEAR_LOGIN_USERNAME_FIELD`, `NETGEAR_LOGIN_PASSWORD_FIELD`. Alternatively set
+`NETGEAR_LOGIN_PATH`, `NETGEAR_LOGIN_PASSWORD_FIELD`. The defaults match the GS316EPP (password only,
+sent as `md5(interleave(password, rand))` to `/redirect.html`). Alternatively set
 `NETGEAR_GAMBIT` to a token copied from the browser (it expires with the web session).
 
 ## Multiple devices

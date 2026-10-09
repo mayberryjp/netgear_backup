@@ -22,9 +22,8 @@ class Settings(BaseSettings):
     request_timeout_seconds: int = 30
 
     # Path and form fields of the switch login form; adjust per firmware.
-    login_path: str = "/iss/specific/login.html"
-    login_username_field: str = "username"
-    login_password_field: str = "password"
+    login_path: str = "/redirect.html"
+    login_password_field: str = "LoginPassword"
 
     # Optional pre-issued session token; skips login when set (it expires with the web session).
     gambit: str = ""
